@@ -327,4 +327,9 @@ type MutationResult {
 type MembershipStats {
   count: Int!
 }
+
+type PageStats {
+  visits: Int
+  uniqueVisitors: Int
+}
 `
