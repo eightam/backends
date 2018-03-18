@@ -1,0 +1,29 @@
+{
+  "name": "publikator-nodegit-backend",
+  "version": "0.0.1",
+  "engines": {
+    "node": "8.10.x",
+    "yarn": "1.5.x"
+  },
+  "private": true,
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "apollo-modules-node": "^0.1.4",
+    "graphql": "^0.12.3",
+    "graphql-tools": "^2.14.1",
+    "jsonwebtoken": "^8.1.0",
+    "nodegit": "^0.21.1",
+    "redis": "^2.8.0",
+    "redlock": "^3.1.0"
+  },
+  "scripts": {
+    "dev": "NODE_ENV=development nodemon -w ../../packages -w graphql -w lib -w .env -w package.json ../yarn.lock -w server.js -w index.js index.js",
+    "start": "node index.js"
+  },
+  "devDependencies": {
+    "@orbiting/backend-modules-env": "link:../../packages/env",
+    "gsheets": "^2.0.0",
+    "nodemon": "^1.14.6",
+    "ws": "^3.3.3"
+  }
+}
