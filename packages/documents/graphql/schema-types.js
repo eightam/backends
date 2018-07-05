@@ -62,10 +62,15 @@ interface FileInterface {
   meta: Meta!
 }
 
+enum Client {
+  PUBLIKATOR
+  FRONTEND
+}
+
 type Document implements FileInterface {
   id: ID!
   # AST of /article.md
-  content: JSON!
+  content(client: Client = FRONTEND): JSON!
   meta: Meta!
   children(
     first: Int

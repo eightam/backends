@@ -1,0 +1,22 @@
+{
+  "name": "@orbiting/backend-modules-document-types",
+  "version": "1.0.0",
+  "description": "Transform rules for our document types",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/orbiting/backends.git"
+  },
+  "author": "Lukas Buenger <lukasbuenger@gmail.com>",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/orbiting/backends/issues"
+  },
+  "homepage": "https://github.com/orbiting/backends#readme",
+  "scripts": {
+    "link": "yarn link"
+  },
+  "dependencies": {
+    "ramda": "^0.25.0"
+  }
+}

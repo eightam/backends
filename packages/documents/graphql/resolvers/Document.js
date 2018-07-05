@@ -1,3 +1,6 @@
+const { mdastToTyped, mdastToSlate } = require('@orbiting/backend-modules-transform')
+const getRulesForDocumentType = require('@orbiting/backend-modules-document-types')
+
 const {
   contentUrlResolver,
   metaUrlResolver
@@ -22,7 +25,7 @@ const shouldDeliverWebP = (argument = 'auto', req) => {
 }
 
 module.exports = {
-  content (doc, { urlPrefix, searchString, webp }, context, info) {
+  content (doc, { client, urlPrefix, searchString, webp }, context, info) {
     // we only do auto slugging when in a published documents context
     // - this is easiest detectable by _all being present from documents resolver
     // - alt check info.path for documents / document being the root
@@ -37,7 +40,21 @@ module.exports = {
 
       processMembersOnlyZonesInContent(doc.content, context.user)
     }
-    return doc.content
+
+    let transform
+    switch (client) {
+      case 'PUBLIKATOR':
+        transform = mdastToSlate
+        break
+      default:
+        transform = mdastToTyped
+        break
+    }
+
+    return transform(
+      getRulesForDocumentType(doc.content.meta.template).fromMdast,
+      doc.content
+    )
   },
   meta (doc, { urlPrefix, searchString, webp }, context, info) {
     const meta = getMeta(doc)

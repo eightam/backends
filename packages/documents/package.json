@@ -25,6 +25,8 @@
   "dependencies": {
     "@project-r/styleguide": "^5.81.1",
     "@project-r/template-newsletter": "^1.5.0",
+    "@orbiting/backend-modules-transform": "^1.0.0",
+    "@orbiting/backend-modules-document-types": "^1.0.0",
     "apollo-modules-node": "^0.1.4",
     "check-env": "^1.3.0",
     "d3-array": "^1.2.1",
