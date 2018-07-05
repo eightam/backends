@@ -1,6 +1,4 @@
-const { mdastToTyped, mdastToSlate } = require('@orbiting/backend-modules-transform')
 const getRulesForDocumentType = require('@orbiting/backend-modules-document-types')
-
 const {
   contentUrlResolver,
   metaUrlResolver
@@ -44,10 +42,10 @@ module.exports = {
     let transform
     switch (client) {
       case 'PUBLIKATOR':
-        transform = mdastToSlate
+        transform = require('@orbiting/backend-modules-transform').mdastToSlate
         break
       default:
-        transform = mdastToTyped
+        transform = require('@orbiting/backend-modules-transform').mdastToTyped
         break
     }
 
