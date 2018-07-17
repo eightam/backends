@@ -23,7 +23,7 @@ module.exports = async (server, pgdb, t) => {
     // ignore test events on production
     if (!body.livemode && !STRIPE_TEST_MODE) {
       debug('webhookHandler ignoring test event')
-      return res.sendStatus(200)
+      return res.sendStatus(300)
     }
 
     await pgdb.public.paymentsLog.insert({
