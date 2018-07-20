@@ -206,6 +206,7 @@ type PledgePayment {
   hrid: String
   pspId: String
   dueDate: DateTime
+  invoices: [Invoice!]!
   # every payment should link to
   # a user, but there is some cleanup
   # to do, to make that reality
@@ -303,5 +304,47 @@ type PostfinancePayment {
 type PostfinancePayments {
   items: [PostfinancePayment!]!
   count: Int!
+}
+
+"""
+An issued invoice. Belongs to a single payment.
+"""
+type Invoice {
+  "A unqiue Invoice number"
+  number: String!
+  "Date on which invoice was issued"
+  date: Date!
+  "Entity which issued invoice"
+  issuer: String!
+  "Address of recipient, or email address and name"
+  recipient: String!
+  "Items on invoice"
+  items: [InvoiceItem!]!
+  "Invoice total amount"
+  total: Float!
+  """
+  Value-Added-Tax reference table for a specific invoice. It summarizes all
+  occuring taxes. An InvoiceItem may have reference it.
+  """
+  vatReferences: [InvoiceVatReference!]
+  "Information on how to wire money"
+  bankdetails: String!
+}
+
+"""
+An item, billed on an invoice
+"""
+type InvoiceItem {
+  label: String!
+  qty: Int
+  unitPrice: Float
+  lineTotal: Float!
+  vatReference: Int
+}
+
+type InvoiceVatReference {
+  reference: Int!
+  label: String!
+  value: Float!
 }
 `

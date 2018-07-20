@@ -15,7 +15,7 @@ const searchWhere = (search, prefix) => {
 }
 
 module.exports = async (
-  _,
+  __,
   { limit, offset, orderBy, search, dateRangeFilter, stringArrayFilter, booleanFilter },
   { pgdb, user }
 ) => {
@@ -31,22 +31,30 @@ module.exports = async (
     orderBy: orderByTerm
   }
 
-  const items = !(search || dateRangeFilter || stringArrayFilter || booleanFilter)
+  let items = !(search || dateRangeFilter || stringArrayFilter || booleanFilter)
     ? await pgdb.public.payments.findAll(options)
     : await pgdb.public.payments.findWhere(`
       ${andFilters([
-        searchWhere(search),
-        dateRangeFilterWhere(dateRangeFilter),
-        stringArrayFilterWhere(stringArrayFilter),
-        booleanFilterWhere(booleanFilter)
-      ])}
-    `, {
+    searchWhere(search),
+    dateRangeFilterWhere(dateRangeFilter),
+    stringArrayFilterWhere(stringArrayFilter),
+    booleanFilterWhere(booleanFilter)
+  ])}`, {
       search: search ? `${search.trim()}%` : null,
       fromDate: dateRangeFilter ? dateRangeFilter.from : null,
       toDate: dateRangeFilter ? dateRangeFilter.to : null,
       stringArray: stringArrayFilter ? stringArrayFilter.values : null,
       booleanValue: booleanFilter ? booleanFilter.value : null
     }, options)
+
+  const invoices = await pgdb.public.invoices.find({
+    paymentId: items.map(item => item.id)
+  })
+
+  items = items.map(item => ({
+    ...item,
+    invoices: invoices.filter(invoice => invoice.paymentId === item.id)
+  }))
 
   const count = await pgdb.public.payments.count()
   return { items, count }
