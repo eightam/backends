@@ -31,7 +31,25 @@ const run = async (workerId) => {
   // middlewares
   const middlewares = [
     require('./modules/crowdfundings/express/paymentWebhooks'),
-    require('./express/gsheets')
+    require('./express/gsheets'),
+    (server, pgdb) => {
+      const router = require('express').Router()
+      server.use(router.get('/cookie-portal', (req, res) => {
+        const cookie = req.get('Cookie')
+        const { url } = req.query
+        console.log('/cookie-portal', {cookie, url})
+        if (url) {
+          res.redirect(url)
+          return
+        }
+        // res.cookie('rememberme', '1', { expires: new Date(Date.now() + 900000), httpOnly: true });
+        if (cookie) {
+          res.end('got 🍪 🤤')
+        } else {
+          res.end('no 🍪 😢')
+        }
+      }))
+    }
   ]
 
   if (LOCAL_ASSETS_SERVER) {
