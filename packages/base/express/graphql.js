@@ -1,7 +1,7 @@
 const bodyParser = require('body-parser')
-const { graphiqlExpress } = require('apollo-server-express')
+const playground = require('graphql-playground-middleware-express').default
 const { SubscriptionServer } = require('subscriptions-transport-ws')
-const { execute, subscribe } = require('graphql')
+const { execute, subscribe, formatError: baseFormatError } = require('graphql')
 const { pubsub } = require('../lib/RedisPubSub')
 const cookie = require('cookie')
 const cookieParser = require('cookie-parser')
@@ -36,8 +36,8 @@ function graphqlExpress (options) {
       options: options,
       query: req.method === 'POST' ? req.body : req.query
     }).then(
-      originalGQLResponse => {
-        let gqlResponse = originalGQLResponse
+      originalResponse => {
+        let gqlResponse = originalResponse.graphqlResponse
         const ua = req.headers['user-agent']
 
         if (ua && ua.includes('RepublikApp') && (
@@ -84,7 +84,7 @@ module.exports = (
   executableSchema,
   externalCreateGraphQLContext = a => a
 ) => {
-  const createContext = ({user, ...additional} = {}) => externalCreateGraphQLContext({
+  const createContext = ({ user, ...additional } = {}) => externalCreateGraphQLContext({
     ...additional,
     pgdb,
     user,
@@ -113,7 +113,7 @@ module.exports = (
         )
         const session = sid && await pgdb.public.sessions.findOne({ sid })
         if (session) {
-          const user = await pgdb.public.users.findOne({id: session.sess.passport.user})
+          const user = await pgdb.public.users.findOne({ id: session.sess.passport.user })
           return createContext({
             user: transformUser(user)
           })
@@ -132,11 +132,12 @@ module.exports = (
     return {
       debug: false,
       formatError (error) {
+        const { extensions, ...rest } = baseFormatError(error)
         console.log(
           `graphql error in ${this.operationName} (${JSON.stringify(this.variables)}):`,
           error
         )
-        return error
+        return { ...extensions, ...rest }
       },
       schema: executableSchema,
       context: createContext({
@@ -150,12 +151,12 @@ module.exports = (
   server.use('/graphql',
     [
       RES_KEEPALIVE ? require('./keepalive') : null,
-      bodyParser.json({limit: '128mb'}),
+      bodyParser.json({ limit: '128mb' }),
       graphqlMiddleware
     ].filter(Boolean)
   )
-  server.use('/graphiql', graphiqlExpress({
-    endpointURL: '/graphql',
+  server.use('/graphiql', playground({
+    endpoint: '/graphql',
     subscriptionsEndpoint: PUBLIC_WS_URL_BASE + PUBLIC_WS_URL_PATH
   }))
 
