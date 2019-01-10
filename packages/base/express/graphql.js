@@ -29,6 +29,10 @@ const {
 // Modifications
 // - strips problematic character (\u2028) for requests from our iOS app
 //   see https://github.com/orbiting/app/issues/159
+// - strips soft hyphens from iOS 9
+//   webfonts and iOS 9:
+//   see http://clagnut.com/blog/2377/
+//   and internally https://piratinnen.slack.com/archives/C8T08FYFR/p1545829447032800
 function graphqlExpress (options) {
   const graphqlHandler = (req, res, next) => {
     runHttpQuery([req, res], {
@@ -40,10 +44,15 @@ function graphqlExpress (options) {
         let gqlResponse = originalGQLResponse
         const ua = req.headers['user-agent']
 
-        if (ua && ua.includes('RepublikApp') && (
+        const isIOS = ua && (
           ua.includes('iPhone') || ua.includes('iPad') || ua.includes('iPod')
-        )) {
+        )
+        if (isIOS && ua.includes('RepublikApp')) {
           gqlResponse = gqlResponse.replace(/\u2028/g, '')
+        }
+
+        if (isIOS && ua.includes(' OS 9')) {
+          gqlResponse = gqlResponse.replace(/\u00ad/g, '')
         }
 
         if (!res.headersSent) {
