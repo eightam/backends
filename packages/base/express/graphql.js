@@ -29,7 +29,7 @@ const {
 // Modifications
 // - strips problematic character (\u2028) for requests from our iOS app
 //   see https://github.com/orbiting/app/issues/159
-// - strips soft hyphens from iOS 9
+// - strips soft hyphens from iOS 9 and Mac OS X 10.11
 //   webfonts and iOS 9:
 //   see http://clagnut.com/blog/2377/
 //   and internally https://piratinnen.slack.com/archives/C8T08FYFR/p1545829447032800
@@ -51,7 +51,10 @@ function graphqlExpress (options) {
           gqlResponse = gqlResponse.replace(/\u2028/g, '')
         }
 
-        if (isIOS && ua.includes(' OS 9')) {
+        if (ua && (
+          (isIOS && ua.includes(' OS 9')) ||
+          (ua.includes('Mac OS X 10.11') || ua.includes('Mac OS X 10_11'))
+        )) {
           gqlResponse = gqlResponse.replace(/\u00ad/g, '')
         }
 
