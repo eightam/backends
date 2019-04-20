@@ -35,7 +35,11 @@
       "helpMessage": "Commit message violates the rules defined for this project. Please, execute `yarn run commit` to generate a correct commit message with `commitizen`"
     }
   },
-  "dependencies": {},
+  "dependencies": {
+    "bluebird": "^3.5.4",
+    "debug": "^4.1.1",
+    "piwik-client": "^0.2.2"
+  },
   "devDependencies": {
     "commitizen": "^2.10.1",
     "cz-conventional-changelog": "^2.1.0",
